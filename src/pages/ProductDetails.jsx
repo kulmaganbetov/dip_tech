@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   ChevronLeft,
@@ -20,6 +20,7 @@ export default function ProductDetails() {
   const { t, lang } = useLanguage()
   const { add } = useCart()
   const fmt = useFormatPrice()
+  const navigate = useNavigate()
 
   if (!product) {
     return (
@@ -100,7 +101,13 @@ export default function ProductDetails() {
                 {fmt(product.price)}
               </div>
             </div>
-            <button onClick={() => add(product.id)} className="btn-accent">
+            <button
+              onClick={() => {
+                add(product.id)
+                navigate('/cart')
+              }}
+              className="btn-accent"
+            >
               <ShoppingCart size={18} />
               {t('common.buy')}
             </button>

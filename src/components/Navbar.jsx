@@ -66,7 +66,7 @@ export default function Navbar() {
           <LanguageSwitcher />
           <ThemeToggle />
           <Link
-            to="/products"
+            to="/cart"
             aria-label={t('nav.cart')}
             className="relative grid h-10 w-10 place-items-center rounded-full text-ink-700 transition-colors hover:bg-ink-100 dark:text-ink-100 dark:hover:bg-ink-800"
           >
