@@ -51,26 +51,267 @@ const TOP_PRODUCTS = [
   { id: 'xiaomi-14', sold: 11 },
 ]
 
-const MOCK_ORDERS = [
-  { customer: 'Алексей Иванов', city: 'Алматы', status: 'delivered' },
-  { customer: 'Айгерим Бекова', city: 'Астана', status: 'shipping' },
-  { customer: 'Нурлан Касымов', city: 'Шымкент', status: 'processing' },
-  { customer: 'Мария Петрова', city: 'Алматы', status: 'confirmed' },
-  { customer: 'Дмитрий Соколов', city: 'Атырау', status: 'delivered' },
-  { customer: 'Зарина Абдулова', city: 'Астана', status: 'shipping' },
-  { customer: 'Бауыржан Серик', city: 'Алматы', status: 'confirmed' },
-  { customer: 'Ольга Смирнова', city: 'Костанай', status: 'processing' },
+const CRM_DATA = [
+  {
+    name: 'Нұрлан Қасымов',
+    email: 'nurlan.kassymov@gmail.com',
+    phone: '+7 701 234 56 78',
+    city: 'Алматы',
+    address: 'пр. Достык, д. 14, кв. 32',
+    payment: 'Kaspi Pay',
+    productId: 'iphone-15-pro',
+    qty: 1,
+    status: 'delivered',
+    daysAgo: 1,
+  },
+  {
+    name: 'Айгерім Бекова',
+    email: 'aigeriim.bekova@mail.ru',
+    phone: '+7 777 098 43 21',
+    city: 'Астана',
+    address: 'ул. Кабанбай батыра, д. 3, кв. 7',
+    payment: 'Картой',
+    productId: 'macbook-pro-m3',
+    qty: 1,
+    status: 'shipping',
+    daysAgo: 1,
+  },
+  {
+    name: 'Бауыржан Сейтқали',
+    email: 'b.seitkali@yandex.kz',
+    phone: '+7 747 312 00 55',
+    city: 'Шымкент',
+    address: 'пр. Тауке хана, д. 88, кв. 112',
+    payment: 'Kaspi Pay',
+    productId: 'samsung-galaxy-s24-ultra',
+    qty: 1,
+    status: 'processing',
+    daysAgo: 2,
+  },
+  {
+    name: 'Дана Жақсыбекова',
+    email: 'dana.zhaksybekova@gmail.com',
+    phone: '+7 702 555 77 88',
+    city: 'Алматы',
+    address: 'мкр. Алмагуль, д. 5, кв. 21',
+    payment: 'Картой',
+    productId: 'asus-rog-strix',
+    qty: 1,
+    status: 'confirmed',
+    daysAgo: 2,
+  },
+  {
+    name: 'Ерлан Ахметов',
+    email: 'yerlan.akhmetov@inbox.ru',
+    phone: '+7 705 811 22 33',
+    city: 'Атырау',
+    address: 'ул. Азаттык, д. 27, кв. 4',
+    payment: 'Наличными',
+    productId: 'lenovo-legion-pro-7',
+    qty: 1,
+    status: 'delivered',
+    daysAgo: 3,
+  },
+  {
+    name: 'Зарина Нұрмаханова',
+    email: 'zarina.nurmakhanova@gmail.com',
+    phone: '+7 771 490 00 12',
+    city: 'Астана',
+    address: 'пр. Туран, д. 55, кв. 301',
+    payment: 'Kaspi Pay',
+    productId: 'iphone-15-pro',
+    qty: 2,
+    status: 'shipping',
+    daysAgo: 3,
+  },
+  {
+    name: 'Алмас Байжанов',
+    email: 'almas.bayzhanov@mail.ru',
+    phone: '+7 707 633 45 90',
+    city: 'Қарағанды',
+    address: 'бул. Мира, д. 19, кв. 60',
+    payment: 'Картой',
+    productId: 'google-pixel-8-pro',
+    qty: 1,
+    status: 'delivered',
+    daysAgo: 4,
+  },
+  {
+    name: 'Меруерт Сариева',
+    email: 'meruert.sarieva@yandex.kz',
+    phone: '+7 778 201 34 56',
+    city: 'Алматы',
+    address: 'ул. Тимирязева, д. 42, кв. 8',
+    payment: 'Kaspi Pay',
+    productId: 'macbook-air-m3',
+    qty: 1,
+    status: 'confirmed',
+    daysAgo: 4,
+  },
+  {
+    name: 'Жандос Тоқтаров',
+    email: 'zhandos.toktarov@gmail.com',
+    phone: '+7 700 987 65 43',
+    city: 'Өскемен',
+    address: 'ул. Ушанова, д. 6, кв. 15',
+    payment: 'Наличными',
+    productId: 'xiaomi-14',
+    qty: 1,
+    status: 'shipping',
+    daysAgo: 5,
+  },
+  {
+    name: 'Камила Рахымбекова',
+    email: 'kamila.rakhymbekova@inbox.ru',
+    phone: '+7 776 123 78 90',
+    city: 'Астана',
+    address: 'ул. Иманова, д. 11, кв. 44',
+    payment: 'Картой',
+    productId: 'dell-xps-15',
+    qty: 1,
+    status: 'delivered',
+    daysAgo: 5,
+  },
+  {
+    name: 'Асқар Дүйсенов',
+    email: 'askar.duisenov@gmail.com',
+    phone: '+7 701 456 89 01',
+    city: 'Тараз',
+    address: 'ул. Байзакова, д. 33, кв. 9',
+    payment: 'Kaspi Pay',
+    productId: 'oneplus-12',
+    qty: 1,
+    status: 'processing',
+    daysAgo: 6,
+  },
+  {
+    name: 'Гүлнара Исмаилова',
+    email: 'gulnara.ismailova@mail.ru',
+    phone: '+7 747 888 11 22',
+    city: 'Алматы',
+    address: 'пр. Аль-Фараби, д. 77, кв. 205',
+    payment: 'Картой',
+    productId: 'samsung-galaxy-s24-ultra',
+    qty: 1,
+    status: 'delivered',
+    daysAgo: 7,
+  },
+  {
+    name: 'Серік Алиев',
+    email: 'serik.aliyev@yandex.kz',
+    phone: '+7 702 741 30 18',
+    city: 'Ақтөбе',
+    address: 'пр. 312-й стрелковой дивизии, д. 4, кв. 28',
+    payment: 'Наличными',
+    productId: 'hp-spectre-x360',
+    qty: 1,
+    status: 'confirmed',
+    daysAgo: 8,
+  },
+  {
+    name: 'Назгүл Әбдіқалықова',
+    email: 'nazgul.abdykalykova@gmail.com',
+    phone: '+7 705 320 99 77',
+    city: 'Шымкент',
+    address: 'ул. Байтурсынова, д. 18, кв. 3',
+    payment: 'Kaspi Pay',
+    productId: 'macbook-pro-m3',
+    qty: 1,
+    status: 'shipping',
+    daysAgo: 9,
+  },
+  {
+    name: 'Тимур Жұмабаев',
+    email: 'timur.zhumabaev@inbox.ru',
+    phone: '+7 771 665 44 33',
+    city: 'Павлодар',
+    address: 'ул. Академика Сатпаева, д. 50, кв. 71',
+    payment: 'Картой',
+    productId: 'iphone-15-pro',
+    qty: 1,
+    status: 'delivered',
+    daysAgo: 10,
+  },
+  {
+    name: 'Аида Мұхамеджанова',
+    email: 'aida.mukhamedzhanova@gmail.com',
+    phone: '+7 778 502 13 64',
+    city: 'Алматы',
+    address: 'мкр. Самал-2, д. 22, кв. 107',
+    payment: 'Kaspi Pay',
+    productId: 'samsung-galaxy-s24',
+    qty: 2,
+    status: 'delivered',
+    daysAgo: 11,
+  },
+  {
+    name: 'Арман Сейітов',
+    email: 'arman.seitov@mail.ru',
+    phone: '+7 707 219 87 56',
+    city: 'Семей',
+    address: 'ул. Шәкәрім, д. 7, кв. 12',
+    payment: 'Наличными',
+    productId: 'lenovo-legion-pro-7',
+    qty: 1,
+    status: 'confirmed',
+    daysAgo: 12,
+  },
+  {
+    name: 'Жанар Оспанова',
+    email: 'zhanar.ospanova@yandex.kz',
+    phone: '+7 700 374 56 12',
+    city: 'Астана',
+    address: 'ул. Сейфуллина, д. 36, кв. 58',
+    payment: 'Картой',
+    productId: 'asus-rog-strix',
+    qty: 1,
+    status: 'processing',
+    daysAgo: 13,
+  },
+  {
+    name: 'Санем Хасенова',
+    email: 'sanem.khassenova@gmail.com',
+    phone: '+7 776 800 22 91',
+    city: 'Қостанай',
+    address: 'пр. Аль-Фараби, д. 9, кв. 34',
+    payment: 'Kaspi Pay',
+    productId: 'google-pixel-8-pro',
+    qty: 1,
+    status: 'delivered',
+    daysAgo: 14,
+  },
+  {
+    name: 'Марат Қонысбаев',
+    email: 'marat.konysbaev@inbox.ru',
+    phone: '+7 701 943 67 85',
+    city: 'Алматы',
+    address: 'ул. Абая, д. 150, кв. 19',
+    payment: 'Картой',
+    productId: 'macbook-air-m3',
+    qty: 1,
+    status: 'shipping',
+    daysAgo: 15,
+  },
 ]
 
-function buildCrmRows(fmt) {
-  return MOCK_ORDERS.map((m, i) => {
-    const p = products[i % products.length]
+function buildCrmRows() {
+  return CRM_DATA.map((m, i) => {
+    const p = products.find((x) => x.id === m.productId) ?? products[i % products.length]
+    const amount = p.price * m.qty
+    const ts = Date.now() - m.daysAgo * 86400000 - i * 1800000
     return {
-      ...m,
-      id: `TS-${(Date.now() - i * 7200000).toString().slice(-8)}`,
+      id: `TS-${ts.toString().slice(-8)}`,
+      name: m.name,
+      email: m.email,
+      phone: m.phone,
+      city: m.city,
+      address: m.address,
+      payment: m.payment,
       product: p.name,
-      amount: p.price,
-      date: new Date(Date.now() - i * 86400000 * 0.6).toLocaleDateString('ru-RU'),
+      qty: m.qty,
+      amount,
+      status: m.status,
+      date: new Date(ts).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit' }),
     }
   })
 }
@@ -254,7 +495,7 @@ export default function Admin() {
       }),
     []
   )
-  const crmRows = useMemo(() => buildCrmRows(fmt), [fmt])
+  const crmRows = useMemo(() => buildCrmRows(), [])
   const categoryData = useMemo(() => {
     const total = salesData.reduce((s, d) => s + d.revenue, 0)
     return [
@@ -482,26 +723,38 @@ export default function Admin() {
           transition={{ delay: 0.3 }}
           className="card overflow-hidden"
         >
-          <div className="flex items-center gap-2 border-b border-ink-100 p-5 dark:border-ink-700">
-            <Package size={16} className="text-brand-500" />
-            <span className="text-sm font-bold text-ink-900 dark:text-white">
-              {ru ? 'Последние заказы (мини-CRM)' : 'Соңғы тапсырыстар (мини-CRM)'}
+          <div className="flex items-center justify-between border-b border-ink-100 p-5 dark:border-ink-700">
+            <div className="flex items-center gap-2">
+              <Package size={16} className="text-brand-500" />
+              <span className="text-sm font-bold text-ink-900 dark:text-white">
+                {ru ? 'Заказы клиентов (мини-CRM)' : 'Клиент тапсырыстары (мини-CRM)'}
+              </span>
+            </div>
+            <span className="rounded-full bg-brand-500/10 px-2.5 py-0.5 text-xs font-semibold text-brand-500">
+              {crmRows.length} {ru ? 'записей' : 'жазба'}
             </span>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] text-sm">
+            <table className="w-full min-w-[1100px] text-sm">
               <thead>
                 <tr className="border-b border-ink-100 bg-ink-50 dark:border-ink-700 dark:bg-ink-900/50">
                   {[
                     ru ? 'Заказ' : 'Тапсырыс',
-                    ru ? 'Клиент' : 'Клиент',
-                    ru ? 'Город' : 'Қала',
+                    ru ? 'ФИО' : 'Аты-жөні',
+                    ru ? 'Email' : 'Email',
+                    ru ? 'Телефон' : 'Телефон',
+                    ru ? 'Адрес' : 'Мекенжай',
                     ru ? 'Товар' : 'Тауар',
+                    ru ? 'Кол-во' : 'Саны',
                     ru ? 'Сумма' : 'Сома',
+                    ru ? 'Оплата' : 'Төлем',
                     ru ? 'Дата' : 'Күні',
                     ru ? 'Статус' : 'Күй',
                   ].map((h) => (
-                    <th key={h} className="px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-ink-400">
+                    <th
+                      key={h}
+                      className="whitespace-nowrap px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-ink-400"
+                    >
                       {h}
                     </th>
                   ))}
@@ -512,15 +765,55 @@ export default function Admin() {
                   const s = STATUS_META[row.status]
                   const SIcon = s.icon
                   return (
-                    <tr key={row.id} className="transition-colors hover:bg-ink-50 dark:hover:bg-ink-800/40">
-                      <td className="px-4 py-3 font-mono text-xs text-ink-400">{row.id}</td>
-                      <td className="px-4 py-3 font-medium text-ink-900 dark:text-white">{row.customer}</td>
-                      <td className="px-4 py-3 text-ink-500 dark:text-ink-300">{row.city}</td>
-                      <td className="max-w-[140px] truncate px-4 py-3 text-ink-500 dark:text-ink-300">{row.product}</td>
-                      <td className="px-4 py-3 font-semibold text-ink-900 dark:text-white">{fmt(row.amount)}</td>
-                      <td className="px-4 py-3 text-ink-400">{row.date}</td>
+                    <tr
+                      key={row.id}
+                      className="transition-colors hover:bg-ink-50 dark:hover:bg-ink-800/40"
+                    >
+                      <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-ink-400">
+                        {row.id}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3 font-medium text-ink-900 dark:text-white">
+                        {row.name}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-ink-500 dark:text-ink-300">
+                        <a
+                          href={`mailto:${row.email}`}
+                          className="hover:text-brand-500 hover:underline"
+                        >
+                          {row.email}
+                        </a>
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3 text-xs text-ink-500 dark:text-ink-300">
+                        {row.phone}
+                      </td>
+                      <td className="px-4 py-3 text-xs text-ink-500 dark:text-ink-300">
+                        <div className="max-w-[160px]">
+                          <span className="font-medium text-ink-700 dark:text-ink-200">{row.city}</span>
+                          <br />
+                          <span className="text-ink-400">{row.address}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-xs text-ink-500 dark:text-ink-300">
+                        <span className="block max-w-[130px] truncate">{row.product}</span>
+                      </td>
+                      <td className="px-4 py-3 text-center text-sm text-ink-500 dark:text-ink-300">
+                        {row.qty}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3 font-semibold text-ink-900 dark:text-white">
+                        {fmt(row.amount)}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3">
+                        <span className="rounded-md bg-ink-100 px-2 py-0.5 text-xs font-medium text-ink-600 dark:bg-ink-800 dark:text-ink-300">
+                          {row.payment}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3 text-xs text-ink-400">
+                        {row.date}
+                      </td>
                       <td className="px-4 py-3">
-                        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${s.cls}`}>
+                        <span
+                          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${s.cls}`}
+                        >
                           <SIcon size={11} />
                           {s.label}
                         </span>
