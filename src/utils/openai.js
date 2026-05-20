@@ -36,6 +36,123 @@ export function hasOpenAIKey() {
 }
 
 /**
+ * Generate a financial/sales report for the admin dashboard.
+ * Falls back to a rich demo report when no API key is configured.
+ * @param {{ totalRevenue:number, totalOrders:number, avgCheck:number, topProduct:string, growth:string, period:string }} stats
+ * @param {'ru'|'kz'} lang
+ */
+export async function generateAdminReport(stats, lang = 'ru') {
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+  if (!apiKey) return demoAdminReport(stats, lang)
+
+  const ru = lang === 'ru'
+  const fmt = (n) => new Intl.NumberFormat(ru ? 'ru-RU' : 'kk-KZ').format(n) + ' ₸'
+
+  const prompt = ru
+    ? `Ты финансовый аналитик интернет-магазина электроники TechShop (Казахстан).
+Данные за ${stats.period}:
+- Выручка: ${fmt(stats.totalRevenue)}
+- Заказов: ${stats.totalOrders}
+- Средний чек: ${fmt(stats.avgCheck)}
+- Лучший товар: ${stats.topProduct}
+- Рост выручки: ${stats.growth}
+
+Напиши структурированный финансовый отчёт с разделами:
+1. Общие итоги
+2. Ключевые тренды и выводы
+3. Риски и точки роста
+4. Рекомендации на следующий период
+
+Кратко, по делу, как настоящий аналитик. Используй маркированные списки.`
+    : `Сен TechShop (Қазақстан) электроника интернет-дүкенінің қаржы талдаушысысың.
+${stats.period} деректері:
+- Түсім: ${fmt(stats.totalRevenue)}
+- Тапсырыстар: ${stats.totalOrders}
+- Орташа чек: ${fmt(stats.avgCheck)}
+- Үздік тауар: ${stats.topProduct}
+- Түсім өсімі: ${stats.growth}
+
+Бөлімдері бар құрылымдалған қаржылық есеп жаз:
+1. Жалпы қорытындылар
+2. Негізгі үрдістер мен тұжырымдар
+3. Тәуекелдер мен өсу нүктелері
+4. Келесі кезеңге ұсыныстар
+
+Қысқаша, нақты, шынайы талдаушы сияқты. Таңбалы тізімдерді пайдалан.`
+
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: import.meta.env.VITE_OPENAI_MODEL || 'gpt-4o-mini',
+      temperature: 0.55,
+      messages: [
+        { role: 'system', content: 'You are a financial analyst. Reply in the same language as the user prompt. Be concise and structured.' },
+        { role: 'user', content: prompt },
+      ],
+    }),
+  })
+
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`OpenAI error ${res.status}: ${text}`)
+  }
+
+  const data = await res.json()
+  return data.choices?.[0]?.message?.content?.trim() || ''
+}
+
+function demoAdminReport(stats, lang = 'ru') {
+  const ru = lang === 'ru'
+  const fmt = (n) => new Intl.NumberFormat(ru ? 'ru-RU' : 'kk-KZ').format(n) + ' ₸'
+
+  if (ru) {
+    return `**Общие итоги**
+• Выручка за период составила ${fmt(stats.totalRevenue)} — рост ${stats.growth} к предыдущему месяцу.
+• Обработано ${stats.totalOrders} заказов, средний чек ${fmt(stats.avgCheck)}.
+• Лидер продаж: ${stats.topProduct}.
+
+**Ключевые тренды**
+• Пиковые продажи приходятся на выходные дни (+25–30% к будням).
+• Смартфоны формируют ~58% выручки, ноутбуки — ~42%.
+• Органический трафик стабильно растёт третью неделю подряд.
+
+**Риски и точки роста**
+• Зависимость от топ-3 SKU составляет ~48% выручки — риск при дефиците.
+• Сегмент ноутбуков показывает более высокий средний чек — потенциал для роста.
+• Конверсия корзины в заказ: ~3.8% — ниже отраслевого ориентира в 4.5%.
+
+**Рекомендации**
+• Запустить email-рассылку с персональными скидками для повторных покупателей.
+• Расширить ассортимент ноутбуков в среднем ценовом сегменте (200–400 тыс. ₸).
+• Добавить программу лояльности для увеличения LTV клиента.`
+  }
+
+  return `**Жалпы қорытындылар**
+• Кезеңдегі түсім ${fmt(stats.totalRevenue)} — өткен айға қарағанда ${stats.growth} өсім.
+• ${stats.totalOrders} тапсырыс өңделді, орташа чек ${fmt(stats.avgCheck)}.
+• Сату көшбасшысы: ${stats.topProduct}.
+
+**Негізгі үрдістер**
+• Сатылым шыңдары демалыс күндерінде байқалады (жұмыс күндерінен +25–30%).
+• Смартфондар түсімнің ~58%-ын, ноутбуктар ~42%-ын құрайды.
+• Органикалық трафик үшінші апта қатарынан тұрақты өсуде.
+
+**Тәуекелдер мен өсу нүктелері**
+• Үздік 3 SKU-ға тәуелділік түсімнің ~48%-ын құрайды — тапшылық кезінде тәуекел.
+• Ноутбук сегменті жоғарырақ орташа чек көрсетеді — өсу потенциалы бар.
+• Себеттен тапсырысқа конверсия: ~3.8% — салалық 4.5% деңгейінен төмен.
+
+**Ұсыныстар**
+• Қайталама сатып алушылар үшін жеке жеңілдіктер бойынша email-жіберілім іске қосу.
+• Орта баға сегментіндегі (200–400 мың ₸) ноутбук ассортиментін кеңейту.
+• Клиент LTV-сін арттыру үшін адалдық бағдарламасын қосу.`
+}
+
+/**
  * Send a chat message to OpenAI and return the assistant reply text.
  * @param {{role:'user'|'assistant', content:string}[]} history
  * @param {string} userMessage

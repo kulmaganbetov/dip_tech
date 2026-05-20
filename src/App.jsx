@@ -8,12 +8,15 @@ import About from './pages/About'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import OrderSuccess from './pages/OrderSuccess'
+import Admin from './pages/Admin'
 import NotFound from './pages/NotFound'
 
 // Top-level router. All pages share MainLayout (navbar + footer).
+// /admin is intentionally outside MainLayout — it uses its own header.
 export default function App() {
   return (
     <Routes>
+      <Route path="/admin" element={<Admin />} />
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
