@@ -75,6 +75,127 @@ export async function chatWithAI(history, userMessage) {
 }
 
 /**
+ * Analyse a completed order and return usage tips + complementary product
+ * recommendations. Falls back to demoAnalysis when no API key is set.
+ * @param {{ id: string, name: string, brand: string, category: string }[]} items
+ * @param {'ru'|'kz'} lang
+ */
+export async function analyzeOrder(items, lang = 'ru') {
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+  if (!apiKey) return demoAnalysis(items, lang)
+
+  const ru = lang === 'ru'
+  const itemsList = items.map((i) => `${i.name} (${i.brand})`).join(', ')
+
+  const prompt = ru
+    ? `Покупатель только что купил в TechShop: ${itemsList}.
+Дай структурированный ответ в двух частях:
+1. "Советы по использованию" — 2–3 практических совета как максимально использовать эти устройства.
+2. "Рекомендуем докупить" — 2–3 конкретных товара или аксессуара из каталога TechShop, которые хорошо дополнят покупку (с ценой в ₸ и кратким обоснованием).
+Отвечай кратко и по делу.`
+    : `Сатып алушы TechShop-тан жаңа ғана сатып алды: ${itemsList}.
+Екі бөліктен тұратын құрылымдалған жауап беріңіз:
+1. "Пайдалану кеңестері" — бұл құрылғыларды барынша тиімді пайдалану бойынша 2–3 практикалық кеңес.
+2. "Қосымша ұсыныстар" — TechShop каталогынан сатып алуды жақсы толықтыратын 2–3 нақты тауар немесе аксессуар (₸ бағасымен және қысқаша негіздемемен).
+Қысқаша және нақты жауап беріңіз.`
+
+  const messages = [
+    { role: 'system', content: SYSTEM_PROMPT },
+    { role: 'user', content: prompt },
+  ]
+
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: import.meta.env.VITE_OPENAI_MODEL || 'gpt-4o-mini',
+      temperature: 0.65,
+      messages,
+    }),
+  })
+
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`OpenAI error ${res.status}: ${text}`)
+  }
+
+  const data = await res.json()
+  return data.choices?.[0]?.message?.content?.trim() || ''
+}
+
+/**
+ * Offline fallback for analyzeOrder. Produces realistic demo text based on
+ * the purchased product categories.
+ */
+export function demoAnalysis(items, lang = 'ru') {
+  const ru = lang === 'ru'
+  const hasPhone = items.some((i) => i.category === 'smartphones')
+  const hasLaptop = items.some((i) => i.category === 'laptops')
+  const firstName = items[0]?.name ?? 'устройство'
+
+  if (ru) {
+    const tips = []
+    const recs = []
+
+    if (hasPhone) {
+      tips.push('Активируйте Face ID / отпечаток пальца сразу после включения — это ускорит повседневное разблокирование.')
+      tips.push('Установите автояркость и режим «Сон» для экономии заряда аккумулятора.')
+      recs.push('Защитное стекло с олеофобным покрытием — от 3 900 ₸')
+      recs.push('Силиконовый чехол MagSafe или с подставкой-кольцом — от 5 500 ₸')
+    }
+    if (hasLaptop) {
+      tips.push('Первый раз зарядите ноутбук полностью, прежде чем начинать работу — это калибрует аккумулятор.')
+      tips.push('Включите FileVault (macOS) или BitLocker (Windows) для защиты данных на диске.')
+      recs.push('USB-C хаб с HDMI и USB-A портами — от 12 900 ₸')
+      recs.push('Механическая клавиатура или беспроводная мышь для комфортной работы — от 8 500 ₸')
+    }
+    if (!hasPhone && !hasLaptop) {
+      tips.push(`Зарегистрируйте ${firstName} на сайте производителя, чтобы активировать гарантию.`)
+      tips.push('Сохраните оригинальную упаковку и чек — пригодится при гарантийном обслуживании.')
+      recs.push('Качественный чехол или сумка для переноски — от 4 500 ₸')
+    }
+
+    return (
+      `**Советы по использованию:**\n` +
+      tips.map((t) => `• ${t}`).join('\n') +
+      `\n\n**Рекомендуем докупить:**\n` +
+      recs.map((r) => `• ${r}`).join('\n')
+    )
+  } else {
+    const tips = []
+    const recs = []
+
+    if (hasPhone) {
+      tips.push('Іске қосқаннан кейін бірден Face ID / саусақ ізін белсендіріңіз — күнделікті бекітуді жылдамдатады.')
+      tips.push('Аккумулятор зарядын үнемдеу үшін авто жарықтық пен «Ұйқы» режимін орнатыңыз.')
+      recs.push('Олеофобты жабынды қорғаныш шыны — 3 900 ₸ бастап')
+      recs.push('MagSafe немесе сақиналы тұғыры бар силикон қапшық — 5 500 ₸ бастап')
+    }
+    if (hasLaptop) {
+      tips.push('Жұмысты бастамас бұрын ноутбукты толық зарядтаңыз — бұл аккумуляторды калибрлейді.')
+      tips.push('Дискідегі деректерді қорғау үшін FileVault (macOS) немесе BitLocker (Windows) іске қосыңыз.')
+      recs.push('HDMI және USB-A порттары бар USB-C хаб — 12 900 ₸ бастап')
+      recs.push('Ыңғайлы жұмыс үшін механикалық пернетақта немесе сымсыз тышқан — 8 500 ₸ бастап')
+    }
+    if (!hasPhone && !hasLaptop) {
+      tips.push(`Кепілдікті белсендіру үшін ${firstName} өндіруші сайтына тіркеңіз.`)
+      tips.push('Кепілдік қызметіне жүгіну кезінде пайдалы болу үшін түпнұсқа қорапты сақтаңыз.')
+      recs.push('Сапалы қапшық немесе тасымалдауға арналған сөмке — 4 500 ₸ бастап')
+    }
+
+    return (
+      `**Пайдалану кеңестері:**\n` +
+      tips.map((t) => `• ${t}`).join('\n') +
+      `\n\n**Қосымша ұсыныстар:**\n` +
+      recs.map((r) => `• ${r}`).join('\n')
+    )
+  }
+}
+
+/**
  * Demo fallback used when no API key is provided. Returns a templated
  * recommendation so the UI is still showcasable.
  */
