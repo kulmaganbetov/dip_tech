@@ -12,6 +12,7 @@ import {
 import { useCart } from '../context/CartContext'
 import { useLanguage } from '../context/LanguageContext'
 import { useFormatPrice } from '../hooks/useFormatPrice'
+import MockPaymentModal from '../components/MockPaymentModal'
 
 const PAYMENT_METHODS = [
   { id: 'card', icon: CreditCard, key: 'payCard' },
@@ -45,6 +46,7 @@ export default function Checkout() {
   })
   const [errors, setErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
 
   const update = (key) => (e) => {
     setForm((f) => ({ ...f, [key]: e.target.value }))
@@ -64,16 +66,7 @@ export default function Checkout() {
     return Object.keys(e).length === 0
   }
 
-  const handleSubmit = async (ev) => {
-    ev.preventDefault()
-    if (!validate() || submitting) return
-
-    setSubmitting(true)
-
-    // Simulate payment processing latency.
-    await new Promise((r) => setTimeout(r, 1400))
-
-    // Build a fake order and persist it for the success page.
+  const placeOrder = () => {
     const orderId = 'TS-' + Date.now().toString().slice(-8)
     const order = {
       id: orderId,
@@ -83,6 +76,7 @@ export default function Checkout() {
         id: product.id,
         name: product.name,
         brand: product.brand,
+        category: product.category,
         image: product.image,
         price: product.price,
         qty,
@@ -91,15 +85,37 @@ export default function Checkout() {
     }
     window.localStorage.setItem(`techshop:order:${orderId}`, JSON.stringify(order))
     window.localStorage.setItem('techshop:lastOrder', orderId)
-
     clear()
     navigate(`/order/${orderId}`, { replace: true })
+  }
+
+  const handleSubmit = async (ev) => {
+    ev.preventDefault()
+    if (!validate() || submitting) return
+
+    if (form.payment === 'card') {
+      // Card payment — show the mock payment modal.
+      setShowPaymentModal(true)
+      return
+    }
+
+    // Kaspi / cash — simulate brief processing then place order.
+    setSubmitting(true)
+    await new Promise((r) => setTimeout(r, 1400))
+    placeOrder()
   }
 
   if (detailed.length === 0) return null
 
   return (
     <section className="container-x py-10 sm:py-14">
+      {showPaymentModal && (
+        <MockPaymentModal
+          total={subtotal}
+          onSuccess={placeOrder}
+          onClose={() => setShowPaymentModal(false)}
+        />
+      )}
       <Link
         to="/cart"
         className="inline-flex items-center gap-1 text-sm text-ink-500 hover:text-ink-900 dark:text-ink-300 dark:hover:text-white"
